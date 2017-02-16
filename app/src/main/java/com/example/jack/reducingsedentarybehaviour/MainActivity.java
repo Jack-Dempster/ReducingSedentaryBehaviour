@@ -116,7 +116,7 @@ public class MainActivity extends AppCompatActivity implements
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.menu_keyword:
-                        Toast.makeText(MainActivity.this, "Random Text", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, "This is other text", Toast.LENGTH_SHORT).show();
                         return true;
                     case R.id.menu_popularity:
                         Toast.makeText(MainActivity.this, "Steps:" + stepTotal, Toast.LENGTH_SHORT).show();
