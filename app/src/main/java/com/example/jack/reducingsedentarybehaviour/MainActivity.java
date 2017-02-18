@@ -1,12 +1,15 @@
 package com.example.jack.reducingsedentarybehaviour;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -41,6 +44,8 @@ public class MainActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        setSupportActionBar(myToolbar);
 
         //mButtonViewWeek = (Button) findViewById(R.id.btn_view_week);
         mButtonViewToday = (Button) findViewById(R.id.btn_view_today);
@@ -55,6 +60,27 @@ public class MainActivity extends AppCompatActivity implements
                 .enableAutoManage(this, 0, this)
                 .build();
         mGoogleApiClient.connect();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_settings:
+                Intent i = new Intent(getApplicationContext(), SettingsActivity.class);
+                startActivity(i);
+                return true;
+            case R.id.menu_exit:
+                // Green item was selected
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     private class ViewDailyStepCountTask extends AsyncTask<Void, Void, Void> {
@@ -116,7 +142,7 @@ public class MainActivity extends AppCompatActivity implements
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.menu_keyword:
-                        Toast.makeText(MainActivity.this, "This is other text", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, "Random Text", Toast.LENGTH_SHORT).show();
                         return true;
                     case R.id.menu_popularity:
                         Toast.makeText(MainActivity.this, "Steps:" + stepTotal, Toast.LENGTH_SHORT).show();
