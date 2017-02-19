@@ -1,14 +1,16 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
-   <!-- <Button
-        android:id="@+id/btn_view_week"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="View this weeks steps" />-->
+    <!-- <Button
+         android:id="@+id/btn_view_week"
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:text="View this weeks steps" />-->
+
+    //Actionbar style
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/my_toolbar"
@@ -17,12 +19,34 @@
         android:background="?attr/colorPrimary"
         android:elevation="4dp"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
+    <TextView
+        android:id="@+id/step_text"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:keepScreenOn="true"
+        android:text="Steps today:"
+        android:textColor="@color/colorPrimary"
+        android:textSize="50sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/step_count"
+        android:layout_below="@+id/step_text"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:keepScreenOn="true"
+        android:text="Steps tests:"
+        android:textColor="@color/colorPrimary"
+        android:textSize="50sp"
+        android:textStyle="bold" />
 
     <Button
         android:id="@+id/btn_view_today"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="View today's steps"/>
+        android:text="View today's steps" />
 
-</LinearLayout>
+</RelativeLayout>

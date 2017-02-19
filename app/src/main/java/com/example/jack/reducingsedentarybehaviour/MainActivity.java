@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -47,10 +48,11 @@ public class MainActivity extends AppCompatActivity implements
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
 
-        //mButtonViewWeek = (Button) findViewById(R.id.btn_view_week);
+
+       /* //mButtonViewWeek = (Button) findViewById(R.id.btn_view_week);
         mButtonViewToday = (Button) findViewById(R.id.btn_view_today);
        // mButtonViewWeek.setOnClickListener(this);
-        mButtonViewToday.setOnClickListener(this);
+        mButtonViewToday.setOnClickListener(this);*/
 
         //Connect to googleApi
         mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -60,6 +62,18 @@ public class MainActivity extends AppCompatActivity implements
                 .enableAutoManage(this, 0, this)
                 .build();
         mGoogleApiClient.connect();
+
+
+        //Find out current step count
+        new ViewDailyStepCountTask().execute();
+    }
+
+    public long getSteps() {
+        return stepTotal;
+    }
+
+    public void setSteps(long steps) {
+        stepTotal = steps;
     }
 
     @Override
@@ -83,8 +97,11 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-    private class ViewDailyStepCountTask extends AsyncTask<Void, Void, Void> {
-        protected Void doInBackground(Void... params) {
+    private class ViewDailyStepCountTask extends AsyncTask<Long, Void, Long> {
+
+        private long stepTotal;
+
+        protected Long doInBackground(Long... params) {
             long total = 0;
 
             PendingResult<DailyTotalResult> result = Fitness.HistoryApi.readDailyTotal(mGoogleApiClient, DataType.TYPE_STEP_COUNT_DELTA);
@@ -97,10 +114,16 @@ public class MainActivity extends AppCompatActivity implements
             } else {
                 Log.w(TAG, "There was a problem getting the step count.");
             }
+            setSteps(total);
             stepTotal = total;
             Log.i(TAG, "Total steps: " + total);
+            return total;
+        }
 
-            return null;
+        @Override
+        protected void onPostExecute(Long result) {
+            TextView steps = (TextView) findViewById(R.id.step_text);
+            steps.setText("You've taken\n"+ (int) (long) result +"\nsteps today");
         }
     }
 
@@ -121,15 +144,15 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onClick(View v) {
-       switch (v.getId()){
-           case R.id.btn_view_week:
-               //new ViewWeekStepCountTask().execute();
-               break;
-           case R.id.btn_view_today:
-               showFilterPopup(v);
-               new ViewDailyStepCountTask().execute();
-                       break;
-       }
+        switch (v.getId()) {
+            case R.id.btn_view_week:
+                //new ViewWeekStepCountTask().execute();
+                break;
+            case R.id.btn_view_today:
+                showFilterPopup(v);
+                new ViewDailyStepCountTask().execute();
+                break;
+        }
     }
 
     // Display anchored popup menu based on view selected
