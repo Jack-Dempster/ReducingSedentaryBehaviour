@@ -29,24 +29,30 @@
         android:keepScreenOn="true"
         android:text="Steps today:"
         android:textColor="@color/colorPrimary"
-        android:textSize="50sp"
+        android:textSize="30sp"
         android:textStyle="bold" />
 
     <TextView
         android:id="@+id/step_count"
-        android:layout_below="@+id/step_text"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@id/step_text"
         android:keepScreenOn="true"
-        android:text="Steps tests:"
+        android:text="Steps today:"
         android:textColor="@color/colorPrimary"
         android:textSize="50sp"
         android:textStyle="bold" />
 
-    <Button
-        android:id="@+id/btn_view_today"
+    <TextView
+        android:id="@+id/step_text2"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="View today's steps" />
+        android:layout_height="match_parent"
+        android:layout_below="@id/step_count"
+        android:gravity="center"
+        android:keepScreenOn="true"
+        android:text="Steps today:"
+        android:textColor="@color/colorPrimary"
+        android:textSize="30sp"
+        android:textStyle="bold" />
 
 </RelativeLayout>

@@ -12,7 +12,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,12 +33,9 @@ public class MainActivity extends AppCompatActivity implements
         GoogleApiClient.OnConnectionFailedListener,
         View.OnClickListener {
 
-    private Button mButtonViewWeek;
-    private Button mButtonViewToday;
     private static final String TAG = "MainActivity";
 
     private GoogleApiClient mGoogleApiClient;
-    private long stepTotal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,17 +59,8 @@ public class MainActivity extends AppCompatActivity implements
                 .build();
         mGoogleApiClient.connect();
 
+        new ViewDailyStepCountTask().execute();//Find out current step count
 
-        //Find out current step count
-        new ViewDailyStepCountTask().execute();
-    }
-
-    public long getSteps() {
-        return stepTotal;
-    }
-
-    public void setSteps(long steps) {
-        stepTotal = steps;
     }
 
     @Override
@@ -89,17 +76,12 @@ public class MainActivity extends AppCompatActivity implements
                 Intent i = new Intent(getApplicationContext(), SettingsActivity.class);
                 startActivity(i);
                 return true;
-            case R.id.menu_exit:
-                // Green item was selected
-                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
     private class ViewDailyStepCountTask extends AsyncTask<Long, Void, Long> {
-
-        private long stepTotal;
 
         protected Long doInBackground(Long... params) {
             long total = 0;
@@ -114,8 +96,6 @@ public class MainActivity extends AppCompatActivity implements
             } else {
                 Log.w(TAG, "There was a problem getting the step count.");
             }
-            setSteps(total);
-            stepTotal = total;
             Log.i(TAG, "Total steps: " + total);
             return total;
         }
@@ -123,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements
         @Override
         protected void onPostExecute(Long result) {
             TextView steps = (TextView) findViewById(R.id.step_text);
-            steps.setText("You've taken\n"+ (int) (long) result +"\nsteps today");
+            steps.setText("You've taken\n" + (int) (long) result + "\nsteps today");
         }
     }
 
@@ -168,7 +148,7 @@ public class MainActivity extends AppCompatActivity implements
                         Toast.makeText(MainActivity.this, "Random Text", Toast.LENGTH_SHORT).show();
                         return true;
                     case R.id.menu_popularity:
-                        Toast.makeText(MainActivity.this, "Steps:" + stepTotal, Toast.LENGTH_SHORT).show();
+                       // Toast.makeText(MainActivity.this, "Steps:" + stepTotal, Toast.LENGTH_SHORT).show();
                         return true;
                     default:
                         return false;
