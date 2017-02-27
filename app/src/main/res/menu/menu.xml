@@ -5,10 +5,5 @@
         android:id="@+id/menu_settings"
         android:icon="@android:drawable/ic_menu_preferences"
         android:title="@string/menu_preferences"
-        app:showAsAction="ifRoom"/>
-    <!--<item
-        android:id="@+id/menu_exit"
-        android:orderInCategory="2"
-        app:showAsAction="never"
-        android:title="Exit"/>-->
+        app:showAsAction="never"/>
 </menu>

@@ -1,19 +1,22 @@
 package com.example.jack.reducingsedentarybehaviour;
 
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.Scopes;
@@ -31,7 +34,7 @@ import java.util.concurrent.TimeUnit;
 public class MainActivity extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        View.OnClickListener {
+        NavigationView.OnNavigationItemSelectedListener {
 
     private static final String TAG = "MainActivity";
 
@@ -41,14 +44,26 @@ public class MainActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
-        setSupportActionBar(myToolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        });
 
-       /* //mButtonViewWeek = (Button) findViewById(R.id.btn_view_week);
-        mButtonViewToday = (Button) findViewById(R.id.btn_view_today);
-       // mButtonViewWeek.setOnClickListener(this);
-        mButtonViewToday.setOnClickListener(this);*/
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
 
         //Connect to googleApi
         mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -64,6 +79,16 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu, menu);
         return true;
@@ -73,12 +98,37 @@ public class MainActivity extends AppCompatActivity implements
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_settings:
-                Intent i = new Intent(getApplicationContext(), SettingsActivity.class);
-                startActivity(i);
+                //Intent i = new Intent(getApplicationContext(), SettingsActivity.class);
+               // startActivity(i);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        if (id == R.id.nav_camera) {
+            // Handle the camera action
+        } else if (id == R.id.nav_gallery) {
+
+        } else if (id == R.id.nav_slideshow) {
+
+        } else if (id == R.id.nav_manage) {
+
+        } else if (id == R.id.nav_share) {
+
+        } else if (id == R.id.nav_send) {
+
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
     }
 
     private class ViewDailyStepCountTask extends AsyncTask<Long, Void, Long> {
@@ -121,43 +171,4 @@ public class MainActivity extends AppCompatActivity implements
         Log.e("HistoryAPI", "onConnected");
     }
 
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.btn_view_week:
-                //new ViewWeekStepCountTask().execute();
-                break;
-            case R.id.btn_view_today:
-                showFilterPopup(v);
-                new ViewDailyStepCountTask().execute();
-                break;
-        }
-    }
-
-    // Display anchored popup menu based on view selected
-    private void showFilterPopup(View v) {
-        PopupMenu popup = new PopupMenu(this, v);
-        // Inflate the menu from xml
-        popup.getMenuInflater().inflate(R.menu.popup_filters, popup.getMenu());
-        // Setup menu item selection
-        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            public boolean onMenuItemClick(MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.menu_keyword:
-                        Toast.makeText(MainActivity.this, "Random Text", Toast.LENGTH_SHORT).show();
-                        return true;
-                    case R.id.menu_popularity:
-                       // Toast.makeText(MainActivity.this, "Steps:" + stepTotal, Toast.LENGTH_SHORT).show();
-                        return true;
-                    default:
-                        return false;
-                }
-            }
-        });
-        // Handle dismissal with: popup.setOnDismissListener(...);
-        popup.setOnDismissListener(null);
-        // Show the menu
-        popup.show();
-    }
 }
