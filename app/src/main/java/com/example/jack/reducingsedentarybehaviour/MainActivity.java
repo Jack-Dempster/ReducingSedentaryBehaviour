@@ -1,5 +1,6 @@
 package com.example.jack.reducingsedentarybehaviour;
 
+import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -28,7 +29,11 @@ import com.google.android.gms.fitness.data.DataSet;
 import com.google.android.gms.fitness.data.DataType;
 import com.google.android.gms.fitness.data.Field;
 import com.google.android.gms.fitness.result.DailyTotalResult;
+import com.txusballesteros.widgets.FitChart;
+import com.txusballesteros.widgets.FitChartValue;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity implements
@@ -55,6 +60,7 @@ public class MainActivity extends AppCompatActivity implements
                         .setAction("Action", null).show();
             }
         });
+
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -99,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements
         switch (item.getItemId()) {
             case R.id.menu_settings:
                 //Intent i = new Intent(getApplicationContext(), SettingsActivity.class);
-               // startActivity(i);
+                // startActivity(i);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -153,8 +159,23 @@ public class MainActivity extends AppCompatActivity implements
         @Override
         protected void onPostExecute(Long result) {
             TextView steps = (TextView) findViewById(R.id.step_text);
-            steps.setText("You've taken\n" + (int) (long) result + "\nsteps today");
+            steps.setText((int) (long) result + " steps today");
+            makeChart(result);
+
         }
+    }
+
+    private void makeChart(float result) {
+        final FitChart fitChart = (FitChart) findViewById(R.id.fitChart);
+        fitChart.setMinValue(0);
+        fitChart.setMaxValue(100);
+
+        result = 5000;//example value, Remove to use real values
+        Resources resources = getResources();
+        Collection<FitChartValue> values = new ArrayList<>();
+        values.add(new FitChartValue(result/100, resources.getColor(R.color.chart_value_2)));
+        fitChart.setValues(values);
+
     }
 
     @Override

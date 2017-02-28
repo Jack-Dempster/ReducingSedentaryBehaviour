@@ -5,6 +5,7 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/white"
     android:fitsSystemWindows="true"
     tools:openDrawer="start">
 
@@ -22,15 +23,47 @@
         app:headerLayout="@layout/nav_header"
         app:menu="@menu/nav_drawer" />
 
-    <TextView
-        android:id="@+id/step_text"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:keepScreenOn="true"
-        android:text="Steps today:"
-        android:textColor="@color/colorPrimary"
-        android:textSize="30sp"
-        android:textStyle="bold" />
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        >
+
+        <com.txusballesteros.widgets.FitChart
+            android:id="@+id/fitChart"
+            style="@style/chart_style"
+            android:layout_gravity="center"
+            app:animationMode="overdraw" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/step_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:maxWidth="200dp"
+                android:text=""
+                android:textColor="#212121"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:maxWidth="200dp"
+                android:text="Your goal is 10,000 steps."
+                android:textColor="#757575"
+                android:textSize="15sp" />
+
+        </LinearLayout>
+    </FrameLayout>
+
 
 </android.support.v4.widget.DrawerLayout>
+
