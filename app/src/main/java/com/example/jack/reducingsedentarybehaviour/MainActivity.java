@@ -1,16 +1,21 @@
 package com.example.jack.reducingsedentarybehaviour;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -36,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -46,8 +52,11 @@ public class MainActivity extends AppCompatActivity implements
         GoogleApiClient.OnConnectionFailedListener {
 
     private static final String TAG = "MainActivity";
+    final Context context = this;
+    private Button button;
 
     private GoogleApiClient fitClient;
+    private HashMap<String, String> stepData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,9 +64,45 @@ public class MainActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle(new SimpleDateFormat("EEEE dd MMMM").format(new Date()));//Set day and date as the title
+        getSupportActionBar().setTitle(new SimpleDateFormat("EEEE d MMMM").format(new Date()));//Set day and date as the title
+        stepData = new HashMap<>();
 
         buildFitClient();
+
+        button = (Button) findViewById(R.id.buttonAlert);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+
+                //set Title
+                alertDialogBuilder.setTitle("Wakeup");
+                //set message
+                alertDialogBuilder
+                        .setMessage("Click here to do something")
+                        .setCancelable(false)
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                MainActivity.this.finish();
+                            }
+                        })
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                // if this button is clicked, just close
+                                // the dialog box and do nothing
+                                dialog.cancel();
+                            }
+                        });
+
+                // create alert dialog
+                AlertDialog alertDialog = alertDialogBuilder.create();
+
+                // show it
+                alertDialog.show();
+            }
+        });
+
 
     }
 
@@ -105,10 +150,14 @@ public class MainActivity extends AppCompatActivity implements
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_settings:
+                Intent j = new Intent(getApplicationContext(), SettingsActivity.class);
+                startActivity(j);
                 return true;
-            case R.id.menu_add:
-                Intent i = new Intent(getApplicationContext(), GoalActivity.class);
+            case R.id.menu_history:
+                Intent i = new Intent(getApplicationContext(), HistoryActivity.class);
+                i.putExtra("stepData", stepData);
                 startActivity(i);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -131,6 +180,7 @@ public class MainActivity extends AppCompatActivity implements
                 Log.w(TAG, "There was a problem getting the step count.");
             }
             Log.i(TAG, "Total steps: " + total);
+
             return total;
         }
 
@@ -145,18 +195,19 @@ public class MainActivity extends AppCompatActivity implements
 
     private class ViewWeeklyStepCountTask extends AsyncTask<Long, Void, Long> {
 
+
         protected Long doInBackground(Long... Params) {
             // Setting a start and end date using a range of 1 week before this moment.
             Calendar cal = Calendar.getInstance();
             Date now = new Date();
             cal.setTime(now);
             long endTime = cal.getTimeInMillis();
-            cal.add(Calendar.WEEK_OF_YEAR, -1);
+            cal.add(Calendar.WEEK_OF_YEAR, -2);
             long startTime = cal.getTimeInMillis();
 
             java.text.DateFormat dateFormat = getDateInstance();
-            Log.i(TAG, "Range Start: " + dateFormat.format(startTime));
-            Log.i(TAG, "Range End: " + dateFormat.format(endTime));
+            //Log.i(TAG, "Range Start: " + dateFormat.format(startTime));
+            //Log.i(TAG, "Range End: " + dateFormat.format(endTime));
 
             DataReadRequest readRequest = new DataReadRequest.Builder()
                     // The data request can specify multiple data types to return, effectively
@@ -172,7 +223,7 @@ public class MainActivity extends AppCompatActivity implements
                     .setTimeRange(startTime, endTime, TimeUnit.MILLISECONDS)
                     .build();
 
-            // Invoke the History API to fetch the data with the query and await the result of
+            // Invoke the HistoryActivity API to fetch the data with the query and await the result of
             // the read request.
             DataReadResult dataReadResult =
                     Fitness.HistoryApi.readData(fitClient, readRequest).await(1, TimeUnit.MINUTES);
@@ -180,7 +231,7 @@ public class MainActivity extends AppCompatActivity implements
             //Reads data returned from fitApi.
             //Data is returned in buckets(in this case bucket = day), look at each day individually
             if (dataReadResult.getBuckets().size() > 0) {
-                Log.e("History", "Number of buckets: " + dataReadResult.getBuckets().size());
+                Log.e("HistoryActivity", "Number of buckets: " + dataReadResult.getBuckets().size());
                 for (Bucket bucket : dataReadResult.getBuckets()) {
                     List<DataSet> dataSets = bucket.getDataSets();
                     for (DataSet dataSet : dataSets) {
@@ -196,21 +247,25 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-    private static void showDataSet(DataSet dataSet) {
-        Log.e("History", "Data returned for Data type: " + dataSet.getDataType().getName());
-        DateFormat dateFormat = DateFormat.getDateInstance();
+    private void showDataSet(DataSet dataSet) {
+
+        // Log.e("HistoryActivity", "Data returned for Data type: " + dataSet.getDataType().getName());
+        DateFormat dateFormat = new SimpleDateFormat("dd EEEE MMMM");
         DateFormat timeFormat = DateFormat.getTimeInstance();
 
         for (DataPoint dp : dataSet.getDataPoints()) {
-            Log.e("History", "Data point:");
-            Log.e("History", "\tType: " + dp.getDataType().getName());
-            Log.e("History", "\tStart: " + dateFormat.format(dp.getStartTime(TimeUnit.MILLISECONDS)) + " " + timeFormat.format(dp.getStartTime(TimeUnit.MILLISECONDS)));
-            Log.e("History", "\tEnd: " + dateFormat.format(dp.getEndTime(TimeUnit.MILLISECONDS)) + " " + timeFormat.format(dp.getStartTime(TimeUnit.MILLISECONDS)));
+           /* Log.e("HistoryActivity", "Data point:");
+            Log.e("HistoryActivity", "\tType: " + dp.getDataType().getName());*/
+            Log.e("HistoryActivity", "\tStart: " + dateFormat.format(dp.getStartTime(TimeUnit.MILLISECONDS)) + " " + timeFormat.format(dp.getStartTime(TimeUnit.MILLISECONDS)));
+            Log.e("HistoryActivity", "\tEnd: " + dateFormat.format(dp.getEndTime(TimeUnit.MILLISECONDS)) + " " + timeFormat.format(dp.getStartTime(TimeUnit.MILLISECONDS)));
             for (Field field : dp.getDataType().getFields()) {
-                Log.e("History", "\tField: " + field.getName() +
+                Log.e("HistoryActivity", "\tField: " + field.getName() +
                         " Value: " + dp.getValue(field));
+                stepData.put((dateFormat.format(dp.getEndTime(TimeUnit.MILLISECONDS))), dp.getValue(field).toString());
             }
         }
+
+
     }
 
     private void makeChart(float result) {
@@ -218,16 +273,12 @@ public class MainActivity extends AppCompatActivity implements
         fitChart.setMinValue(0);
         fitChart.setMaxValue(100);
 
-        result = 5000;//example value, Remove to use real values
+        //result = 5000;//example value, Remove to use real values
         Resources resources = getResources();
         Collection<FitChartValue> values = new ArrayList<>();
         values.add(new FitChartValue(result / 100, resources.getColor(R.color.chart_value_2)));
         fitChart.setValues(values);
 
     }
-
-
-
-
 
 }

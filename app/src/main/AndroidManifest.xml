@@ -18,14 +18,15 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".GoalActivity"
-            android:label="Goals"
+            android:name=".HistoryActivity"
+            android:label="History"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.jack.reducingsedentarybehaviour.MainActivity" />
         </activity>
+        <activity android:name=".SettingsActivity"></activity>
     </application>
 
 </manifest>

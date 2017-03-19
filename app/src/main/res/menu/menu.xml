@@ -11,9 +11,9 @@
         android:title="@string/menu_preferences"
         app:showAsAction="never"/>
 
-    <item
+    <!--<item
         android:id="@+id/menu_add"
         android:icon="@drawable/ic_add"
         android:title="@string/add"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom"/>-->
 </menu>
